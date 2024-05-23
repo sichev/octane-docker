@@ -20,4 +20,5 @@ List of unfinished tasks:
     - install a new key if app is new
     - made all migrations 
     - everything of it easy to run. Made a script or just an instruction.
+- Made a custom tags which represents all used or specified versions. 
 
