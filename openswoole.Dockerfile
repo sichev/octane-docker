@@ -3,13 +3,13 @@ FROM php:cli-alpine
 
 RUN \
     curl -sfL https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer && \
-    chmod +x /usr/bin/composer                                                                     && \
-    composer self-update --clean-backups 2.6.6                                    && \
+    chmod +x /usr/bin/composer && \
+    composer self-update --clean-backups && \
     apk update && \
     apk add --no-cache linux-headers && \
-    apk add --no-cache libstdc++ postgresql-dev libpq && \
-    apk add --no-cache --virtual .build-deps $PHPIZE_DEPS curl-dev openssl-dev pcre-dev pcre2-dev zlib-dev && \
-    docker-php-ext-install sockets pcntl && \
+    apk add --no-cache libstdc++ postgresql-dev libpq zip bzip2 libzip && \
+    apk add --no-cache --virtual .build-deps $PHPIZE_DEPS curl-dev openssl-dev pcre-dev pcre2-dev zlib-dev bzip2-dev libzip-dev && \
+    docker-php-ext-install sockets pcntl pdo_mysql pdo_pgsql pgsql bz2 zip && \
     docker-php-source extract && \
     mkdir /usr/src/php/ext/openswoole && \
     curl -sfL https://github.com/openswoole/ext-openswoole/archive/v22.1.2.tar.gz -o openswoole.tar.gz && \
