@@ -18,11 +18,15 @@ RUN \
         --enable-http2   \
         --enable-mysqlnd \
         --enable-openssl \
-        --enable-sockets --enable-hook-curl --with-postgres && \
+        --enable-sockets \
+        --enable-hook-curl \
+        --with-postgres && \
     docker-php-ext-install -j$(nproc) --ini-name zzz-docker-php-ext-openswoole.ini openswoole && \
     rm -f openswoole.tar.gz $HOME/.composer/*-old.phar && \
     docker-php-source delete && \
     apk del .build-deps && \
-    apk add --update npm
+    apk add --update npm git && \
+    composer global require "laravel/installer" && \
+    ln -s /root/.composer/vendor/bin/laravel /usr/local/bin/laravel
 
 WORKDIR "/var/www/"
