@@ -27,6 +27,7 @@ RUN \
     apk del .build-deps && \
     apk add --update npm git && \
     composer global require "laravel/installer" && \
-    ln -s /root/.composer/vendor/bin/laravel /usr/local/bin/laravel
+    ln -s /root/.composer/vendor/bin/laravel /usr/local/bin/laravel && \
+    cp /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini
 
 WORKDIR "/var/www/"
