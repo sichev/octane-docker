@@ -1,4 +1,4 @@
-FROM php:cli-alpine
+FROM php:8.4-cli-alpine
 
 
 RUN \
@@ -8,11 +8,12 @@ RUN \
     apk update && \
     apk add --no-cache linux-headers && \
     apk add --no-cache libstdc++ postgresql-dev libpq zip bzip2 libzip && \
-    apk add --no-cache --virtual .build-deps $PHPIZE_DEPS curl-dev openssl-dev pcre-dev pcre2-dev zlib-dev bzip2-dev libzip-dev && \
-    docker-php-ext-install sockets pcntl pdo_mysql pdo_pgsql pgsql bz2 zip && \
+    apk add --no-cache --virtual .build-deps $PHPIZE_DEPS curl-dev openssl-dev pcre-dev pcre2-dev zlib-dev bzip2-dev libzip-dev libpng-dev jpeg-dev libwebp-dev libpq-dev && \
+    docker-php-ext-configure gd --enable-gd --with-webp --with-jpeg && \
+    docker-php-ext-install -j$(nproc) sockets pcntl pdo_mysql pdo_pgsql pgsql bz2 zip gd mysqli exif && \
     docker-php-source extract && \
     mkdir /usr/src/php/ext/openswoole && \
-    curl -sfL https://github.com/openswoole/ext-openswoole/archive/v22.1.2.tar.gz -o openswoole.tar.gz && \
+    curl -sfL https://github.com/openswoole/ext-openswoole/archive/v25.2.0.tar.gz -o openswoole.tar.gz && \
     tar xfz openswoole.tar.gz --strip-components=1 -C /usr/src/php/ext/openswoole && \
     docker-php-ext-configure openswoole \
         --enable-http2   \

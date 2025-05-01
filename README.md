@@ -10,14 +10,14 @@ And on success will push everything to the Hub.
 # TO-DO
 List of unfinished tasks:
 
-- Implement an instruction/script how to activate an application (optional):
-    - install laravel skeleton app or from git current project
-    - install composer and node packages
-    - install a new key if app is new
-    - made all migrations 
-    - everything of it easy to run. Made a script or just an instruction.
-- Made a custom tags which represents all used or specified versions. 
-- Extract Docker Hub name to ENV 
+- [ ] Implement an instruction/script how to activate an application (optional):
+    - [ ] install laravel skeleton app or from git current project
+    - [ ] install composer and node packages
+    - [ ] install a new key if app is new
+    - [ ] made all migrations 
+    - [ ] everything of it easy to run. Made a script or just an instruction.
+- [x] Made a custom tags which represents all used or specified versions. 
+- [ ] Extract Docker Hub name to ENV 
 
 # Example how to use images for the local development
 
