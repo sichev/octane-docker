@@ -1,4 +1,4 @@
-FROM sichev/octane-openswoole:8.3
+FROM sichev/octane-openswoole:8.4
 
 RUN \
     cp -f /usr/local/etc/php/php.ini-development /usr/local/etc/php/php.ini && \
