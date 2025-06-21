@@ -6,6 +6,6 @@ docker buildx build -f openswoole-83.Dockerfile --platform linux/amd64,linux/arm
 docker buildx build -f openswoole-83-dev.Dockerfile --platform linux/amd64,linux/arm64/v8 -t sichev/octane-openswoole-dev:stable -t sichev/octane-openswoole-dev:8.3 --push . && \
 
 docker buildx build -f openswoole-84.Dockerfile --platform linux/amd64,linux/arm64/v8 -t sichev/octane-openswoole:8.4 -t sichev/octane-openswoole:latest --push . && \
-docker buildx build -f openswoole-84-dev.Dockerfile --platform linux/amd64,linux/arm64/v8 -t sichev/octane-openswoole-dev:8.4 -t sichev/octane-openswoole-dev:latest--push . && \
+docker buildx build -f openswoole-84-dev.Dockerfile --platform linux/amd64,linux/arm64/v8 -t sichev/octane-openswoole-dev:8.4 -t sichev/octane-openswoole-dev:latest --push . && \
 
 echo "Done!"
