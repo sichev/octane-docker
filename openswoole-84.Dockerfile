@@ -4,7 +4,7 @@ FROM php:8.4-cli-alpine
 RUN apk update
 
 RUN \
-    apk add libpq zip bzip2 libzip libpng libwebp jpeg && \
+    apk add libpq zip bzip2 libzip libpng libwebp jpeg libbz2 && \
     apk add --virtual .build-deps $PHPIZE_DEPS linux-headers libstdc++ postgresql-dev curl-dev openssl-dev pcre-dev pcre2-dev zlib-dev bzip2-dev libzip-dev libpng-dev jpeg-dev libwebp-dev libpq-dev && \
     docker-php-source extract && \
     docker-php-ext-configure gd --enable-gd --with-webp --with-jpeg && \
