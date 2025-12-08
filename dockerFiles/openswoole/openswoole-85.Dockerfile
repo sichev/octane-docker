@@ -1,4 +1,4 @@
-FROM php:8.5-rc-cli-alpine
+FROM php:8.5-cli-alpine
 
 
 RUN apk update
