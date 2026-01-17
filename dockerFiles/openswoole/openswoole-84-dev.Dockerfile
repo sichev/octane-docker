@@ -12,4 +12,5 @@ RUN \
     sed -i '1 a xdebug.client_port=9000' /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \
     docker-php-source delete && \
     apk del .build-deps linux-headers && \
+    npm i --global chokidar && \
     echo "Done."
