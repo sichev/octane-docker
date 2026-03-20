@@ -2,7 +2,9 @@
 
 ### FPM versions
 docker buildx build -f dockerFiles/fpm/fpm-8.4.Dockerfile --platform linux/amd64,linux/arm64/v8 --tag sichev/fpm:8.4 --tag sichev/fpm:stable --push . && \
-docker buildx build -f dockerFiles/fpm/fpm-8.5.Dockerfile --platform linux/amd64,linux/arm64/v8 --tag sichev/fpm:8.5 --tag sichev/fpm:latest --push .
+docker buildx build -f dockerFiles/fpm/fpm-8.4-dev.Dockerfile --platform linux/amd64,linux/arm64/v8 --tag sichev/fpm-dev:8.4 --tag sichev/fpm-dev:stable --push . && \
+docker buildx build -f dockerFiles/fpm/fpm-8.5.Dockerfile --platform linux/amd64,linux/arm64/v8 --tag sichev/fpm:8.5 --tag sichev/fpm:latest --push . && \
+docker buildx build -f dockerFiles/fpm/fpm-8.5-dev.Dockerfile --platform linux/amd64,linux/arm64/v8 --tag sichev/fpm-dev:8.5 --tag sichev/fpm-dev:latest --push .
 
 
 ### Open Swoole versions
