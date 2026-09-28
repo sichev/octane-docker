@@ -1,26 +1,69 @@
 # Docker image for PHP services
-The main purpose of this project is to create self-enough docker images for average PHP/Laravel projects backed with 
-*open-swoole* extension (Octane way) or just a regular FPM, but with all bells and whistles included. Maximum usage of 
-native images and binaries. And a multi-arch image under one tag. So it will be possible to use *amd64* arch (Windows 
-desktop and Linux servers) as well as *arm64v8* (Apple M series and some modern Linux servers).
+This project makes Docker images for PHP and Laravel projects. There are two types of images:
 
-# How to use builder
-We have a script – **bin/build.sh**. Run it from the root folder, and it will build everything you need. **Docker for 
-Desktop** is required. Some tuning is also required. And after the success build, image will be pushed to the Hub. 
-If you fork this, please change tags to yours.
+- **OpenSwoole**: for Laravel Octane.
+- **FPM**: for usual PHP-FPM projects.
+
+Each image has all the usual PHP extensions and tools. The images use official base images and native binaries.
+
+Each tag contains a multi-architecture image. You can use the same tag on these platforms:
+
+- **amd64**: Windows desktops and Linux servers.
+- **arm64v8**: Apple M-series computers and some Linux servers.
+
+# How to build the images
+
+## Requirements
+- Docker Desktop (with `buildx`).
+- A Docker Hub account. Log in before you start the build (`docker login`).
+
+## Configuration
+The build scripts read the Docker Hub namespace and the image names from the `.env` file. This file is in the
+project root. Git does not keep this file.
+
+To make the `.env` file:
+
+1. Copy the example file:
+   ```shell
+   cp .env.example .env
+   ```
+2. Change the values to your values.
+
+| Variable           | Script       | Description                                                             | Default value       |
+|--------------------|--------------|-------------------------------------------------------------------------|---------------------|
+| `DOCKER_REPO`      | all scripts  | Docker Hub namespace (user or organization)                             | `sichev`            |
+| `FPM_IMAGE`        | `build.sh`   | Name of the FPM image. The dev image name has the `-dev` suffix.        | `fpm`               |
+| `OPENSWOOLE_IMAGE` | `build.sh`   | Name of the OpenSwoole image. The dev image name has the `-dev` suffix. | `octane-openswoole` |
+| `SWOOLE_IMAGE`     | `sandbox.sh` | Name of the experimental Swoole image                                   | `php-swoole`        |
+
+> **NOTE:** If a variable is missing, the script stops before the build starts.
+
+> **NOTE:** The scripts contain the version tags and the `stable` and `latest` tags. Change them in the scripts.
+
+## Build
+To build all images and push them to Docker Hub, run this command:
+
+```shell
+bin/build.sh
+```
+
+You can start the script from any folder. The script always reads the `.env` file from the project root.
+
+The **bin/sandbox.sh** script builds experimental images. It does not push them to Docker Hub. Some of these
+builds can fail.
 
 # TO-DO
-List of unfinished tasks:
-
-- [x] Made custom tags that represent all used or specified versions. 
-- [ ] Extract Docker Hub name and everything, what is possible to ENV variables (restored) 
+- [x] Make tags for all PHP versions.
+- [x] Move the Docker Hub namespace and the image names to environment variables.
 
 # Examples
-## Example how to use already built images for the local development
+The examples use the published `sichev/*` images. If you use your images, change the names.
 
-Expecting that Docker for desktop (or any other variation) is installed locally, configured and running.
-To simplify usage, add these aliases to your shell profile/RC script (may need to adopt a bit for a specific shell).
-Currently, it uses the current image from this repository. Change to own if needed. FPM image also may be used.
+## Use the images for local development
+Before you start, make sure that Docker Desktop (or an equivalent tool) is installed and running.
+
+Add these aliases to your shell profile (for example, `~/.zshrc`). Other shells can need small changes.
+You can also use the FPM image in the aliases.
 
 ```shell
 alias dr="docker run --rm -v .:/var/www -w /var/www -ti"
@@ -33,55 +76,57 @@ alias drc="dro composer"
 alias drp="dro php"
 alias drpl="drol php"
 alias dra="drp artisan"
+alias drpd="drod php -d xdebug.mode=debug -d xdebug.start_with_request=yes -d xdebug.client_host=host.docker.internal -d xdebug.client_port=9000"
 alias drpld="drold php -d xdebug.mode=debug -d xdebug.start_with_request=yes -d xdebug.client_host=host.docker.internal -d xdebug.client_port=9000"
 alias drad="drpd artisan"
 ```
 
-- `dro` is used to run any command in the container
-- `drc` for a composer
-- `dra` for any artisan command (assume that you are in the project root folder)
-- all aliases with **d** in the end execute a debug mode in the dev image (with enabled xDebug)
-- if needed to map a port (for octane image), use commands with **l** (small L) keyword (like `drol` or `drold`) 
-- beware that images are read-only and all changes will be lost after the end of command execution. If you need to keep
-  them, you need to mount that folder/files to the host.
+| Alias           | Function                                                               |
+|-----------------|------------------------------------------------------------------------|
+| `dro`           | Runs a command in the container.                                       |
+| `drc`           | Runs Composer.                                                         |
+| `dra`           | Runs an Artisan command. Start it from the project root.               |
+| `d` at the end  | Uses the dev image with Xdebug. Use it to debug.                       |
+| `l` in the name | Connects the port (for example, `drol` or `drold`). Use it for Octane. |
 
-## Example how to use images for the projects with Laravel Octane
+> **CAUTION:** The container does not keep changes to its files. When the command stops, all changes are lost.
+> To keep the files, mount the folder from the host.
 
-Expecting that you already installed and configured all that Octane stuff.
+## Use the images with Laravel Octane
+Before you start, install and configure Laravel Octane in your project.
 
-use a docker-compose.yml file like this:
-```yaml
-services:
-  web:
-    image: sichev/octane-openswoole
-    extra_hosts:
-      - 'host.docker.internal:host-gateway'
-    ports:
-      - "127.0.0.1:${APP_PORT}:${APP_PORT}"
-    volumes:
-      - .:/var/www
-      # or add your own configs to replace the default ones inside the container:
-      - ./.config/php/php.ini:/usr/local/etc/php/php.ini
-    entrypoint:
-      - '/usr/local/bin/php'
-      - '/var/www/artisan'
-      - 'octane:start'
-      - '--server=swoole'
-      - '--host=0.0.0.0'
-      - '--port=${APP_PORT}'
-    restart: always
+1. Make a `docker-compose.yml` file. Use this example:
+   ```yaml
+   services:
+     web:
+       image: sichev/octane-openswoole
+       extra_hosts:
+         - 'host.docker.internal:host-gateway'
+       ports:
+         - "127.0.0.1:${APP_PORT}:${APP_PORT}"
+       volumes:
+         - .:/var/www
+         # Optional: replace the default configuration in the container with your file:
+         - ./.config/php/php.ini:/usr/local/etc/php/php.ini
+       entrypoint:
+         - '/usr/local/bin/php'
+         - '/var/www/artisan'
+         - 'octane:start'
+         - '--server=swoole'
+         - '--host=0.0.0.0'
+         - '--port=${APP_PORT}'
+       restart: always
+   ```
+2. Set the `APP_PORT` variable in the `.env` file of your project. This variable is mandatory.
+3. Start the container:
+   ```shell
+   docker compose up
+   ```
+   To run the container in the background, add the `-d` option.
 
-```
+You can also use the aliases with this project. For example, to run the Laravel migrations, use `dra migrate`.
 
-then just simply run `docker-compose up` (or with a `-d` key for daemon) and you are ready to go.
+> **CAUTION:** The container does not keep changes to its files. To keep the files, mount them from the host.
 
-Or when all images are already built, you can run `dra migrate` to run Laravel migrations, for example. 
-Please note that all files changes in the container will be lost after the command execution. If you need to keep 
-them, you need to mount them to the host.
-
-**APP_PORT** value is **mandatory** to work. Put it in your .env file.
-
-## Running a custom entrypoint
-
-Actually, it's pretty same as the previous example, but you need to tune the entrypoint section.
-
+## Use a custom entrypoint
+Use the Laravel Octane example. Change the `entrypoint` section to your command.
