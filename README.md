@@ -1,25 +1,26 @@
 # Docker image for PHP services
-The main purpose of this project is to create self-enough docker images for average PHP projects backed with 
-*open-swoole* extension or just a regular FPM, but with all bells and whistles included. Maximum usage of native images, 
-but need to build a multi-arch image under one tag. So it will be possible to use *amd64* arch (Windows desktop and 
-Linux servers) as well as *arm64v8* (Apple M series and some modern Linux servers). 
-Maybe more in the future (like *arm32v7* (Raspberry Pi))...
+The main purpose of this project is to create self-enough docker images for average PHP/Laravel projects backed with 
+*open-swoole* extension (Octane way) or just a regular FPM, but with all bells and whistles included. Maximum usage of 
+native images and binaries. And a multi-arch image under one tag. So it will be possible to use *amd64* arch (Windows 
+desktop and Linux servers) as well as *arm64v8* (Apple M series and some modern Linux servers).
 
-# How to use
-We have a script - **build.sh**. Run it and it will build everything you need. Docker for Desktop is required. 
-Some tuning is also required. And on the success build will push everything to the Hub.
+# How to use builder
+We have a script – **bin/build.sh**. Run it from the root folder, and it will build everything you need. **Docker for 
+Desktop** is required. Some tuning is also required. And after the success build, image will be pushed to the Hub. 
+If you fork this, please change tags to yours.
 
 # TO-DO
 List of unfinished tasks:
 
 - [x] Made custom tags that represent all used or specified versions. 
-- [x] ~~Extract Docker Hub name to ENV~~ (canceled due to overcomplication) 
+- [ ] Extract Docker Hub name and everything, what is possible to ENV variables (restored) 
 
 # Examples
-## Example how to use images for the local development
+## Example how to use already built images for the local development
 
 Expecting that Docker for desktop (or any other variation) is installed locally, configured and running.
-Insert this code to your shell profile script (may need to adopt a bit for a specific shell).
+To simplify usage, add these aliases to your shell profile/RC script (may need to adopt a bit for a specific shell).
+Currently, it uses the current image from this repository. Change to own if needed. FPM image also may be used.
 
 ```shell
 alias dr="docker run --rm -v .:/var/www -w /var/www -ti"
@@ -40,7 +41,9 @@ alias drad="drpd artisan"
 - `drc` for a composer
 - `dra` for any artisan command (assume that you are in the project root folder)
 - all aliases with **d** in the end execute a debug mode in the dev image (with enabled xDebug)
-- if needed to map a port, use commands with **l** (small L) keyword (like `drol` or `drold`) 
+- if needed to map a port (for octane image), use commands with **l** (small L) keyword (like `drol` or `drold`) 
+- beware that images are read-only and all changes will be lost after the end of command execution. If you need to keep
+  them, you need to mount that folder/files to the host.
 
 ## Example how to use images for the projects with Laravel Octane
 
@@ -48,7 +51,6 @@ Expecting that you already installed and configured all that Octane stuff.
 
 use a docker-compose.yml file like this:
 ```yaml
-version: '3.8'
 services:
   web:
     image: sichev/octane-openswoole
@@ -73,7 +75,7 @@ services:
 
 then just simply run `docker-compose up` (or with a `-d` key for daemon) and you are ready to go.
 
-Or when all images are already built, you can run `dra migrate` to run Laravel migrations, for examples. 
+Or when all images are already built, you can run `dra migrate` to run Laravel migrations, for example. 
 Please note that all files changes in the container will be lost after the command execution. If you need to keep 
 them, you need to mount them to the host.
 
