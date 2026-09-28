@@ -2,8 +2,8 @@ FROM php:8.3-cli-alpine
 
 RUN \
     apk update && \
-    apk add --no-cache libpq zip bzip2 libzip libpng libbz2 && \
-    apk add --no-cache --virtual .build-deps $PHPIZE_DEPS linux-headers libstdc++ postgresql-dev curl-dev openssl-dev pcre-dev pcre2-dev zlib-dev bzip2-dev libzip-dev libpng-dev jpeg-dev libwebp-dev libpq-dev && \
+    apk add --no-cache libpq zip bzip2 libzip libpng libbz2 icu-libs && \
+    apk add --no-cache --virtual .build-deps $PHPIZE_DEPS linux-headers libstdc++ postgresql-dev curl-dev openssl-dev pcre-dev pcre2-dev zlib-dev bzip2-dev libzip-dev libpng-dev jpeg-dev libwebp-dev libpq-dev icu-dev && \
     docker-php-ext-configure gd --enable-gd --with-webp --with-jpeg && \
     docker-php-ext-install gd sockets pcntl pdo_mysql pdo_pgsql pgsql bz2 zip mysqli exif intl bcmath && \
     docker-php-source extract && \

@@ -3,10 +3,10 @@ FROM php:8.4-fpm-alpine
 RUN apk update && apk upgrade
 
 RUN \
-    apk add libpng libwebp jpeg libbz2 libpq libzip && \
-    apk add --no-cache --virtual zlib1g-dev libpng-dev jpeg-dev libwebp-dev bzip2-dev libzip-dev openssl-dev libpq-dev && \
+    apk add libpng libwebp jpeg libbz2 libpq libzip icu-libs && \
+    apk add --no-cache --virtual zlib1g-dev libpng-dev jpeg-dev libwebp-dev bzip2-dev libzip-dev openssl-dev libpq-dev icu-dev && \
     docker-php-ext-configure gd --enable-gd --with-webp --with-jpeg && \
-    docker-php-ext-install -j$(nproc) gd bz2 zip pdo_mysql pdo_pgsql pgsql mysqli exif intl bcmath && \
+    docker-php-ext-install -j$(nproc) gd bz2 zip pdo_mysql pdo_pgsql pgsql mysqli exif intl bcmath pcntl && \
     apk del zlib1g-dev libpng-dev jpeg-dev libwebp-dev bzip2-dev libzip-dev openssl-dev libpq-dev
 
 RUN \
